@@ -7,9 +7,11 @@ toolchain go1.22.1
 require (
 	github.com/cert-manager/cert-manager v1.15.2
 	github.com/go-bindata/go-bindata v3.1.2+incompatible
+	github.com/go-logr/logr v1.4.2
 	github.com/golangci/golangci-lint v1.50.1
 	github.com/google/go-cmp v0.6.0
 	github.com/google/go-jsonnet v0.17.0
+	github.com/maxbrunsfeld/counterfeiter/v6 v6.8.1
 	github.com/mogensen/kubernetes-split-yaml v0.3.0
 	github.com/onsi/ginkgo/v2 v2.19.0
 	github.com/onsi/gomega v1.33.1
@@ -28,6 +30,7 @@ require (
 	k8s.io/client-go v0.30.8
 	k8s.io/code-generator v0.30.8
 	k8s.io/component-base v0.30.8
+	k8s.io/klog/v2 v2.120.1
 	k8s.io/kubernetes v1.30.8
 	k8s.io/utils v0.0.0-20240502163921-fe8a2dddb1d0
 	sigs.k8s.io/controller-runtime v0.18.6
@@ -86,7 +89,6 @@ require (
 	github.com/fzipp/gocyclo v0.6.0 // indirect
 	github.com/go-critic/go-critic v0.6.5 // indirect
 	github.com/go-errors/errors v1.4.2 // indirect
-	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-logr/zapr v1.3.0 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
@@ -271,7 +273,6 @@ require (
 	k8s.io/component-helpers v0.30.1 // indirect
 	k8s.io/controller-manager v0.30.1 // indirect
 	k8s.io/gengo/v2 v2.0.0-20240228010128-51d4e06bde70 // indirect
-	k8s.io/klog/v2 v2.120.1 // indirect
 	k8s.io/kms v0.30.8 // indirect
 	k8s.io/kube-aggregator v0.30.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20240430033511-f0e62f92d13f // indirect
