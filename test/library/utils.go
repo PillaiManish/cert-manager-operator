@@ -17,6 +17,27 @@ import (
 	configv1 "github.com/openshift/client-go/config/clientset/versioned/typed/config/v1"
 )
 
+func (d DynamicResourceLoader) CreateNS(namespace string) (*v1.Namespace, error) {
+	namespaceObject := &v1.Namespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: namespace,
+			Labels: map[string]string{
+				"e2e-test": "true",
+				"operator": "openshift-cert-manager-operator",
+			},
+		},
+	}
+
+	// Create the namespace
+	createdNamespace, err := d.KubeClient.CoreV1().Namespaces().Create(context.TODO(), namespaceObject, metav1.CreateOptions{})
+	if err != nil {
+		return namespaceObject, err
+	}
+
+	return createdNamespace, nil
+
+}
+
 func (d DynamicResourceLoader) CreateTestingNS(namespacePrefix string) (*v1.Namespace, error) {
 	namespace := &v1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
