@@ -52,7 +52,7 @@ type Reconciler struct {
 	scheme        *runtime.Scheme
 }
 
-// +kubebuilder:rbac:groups=operator.openshift.io,resources=istiocsrs,verbs=get;list;watch
+// +kubebuilder:rbac:groups=operator.openshift.io,resources=istiocsrs,verbs=get;list;watch;update;patch
 // +kubebuilder:rbac:groups=operator.openshift.io,resources=istiocsrs/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=operator.openshift.io,resources=istiocsrs/finalizers,verbs=update
 // +kubebuilder:rbac:groups=cert-manager.io,resources=certificates,verbs=get;list;watch;create;update

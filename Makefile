@@ -156,7 +156,7 @@ update: update-scripts update-manifests update-bindata
 .PHONY: update-with-container
 update-with-container:
 	$(CONTAINER_ENGINE) run -ti --rm -v $(PWD):/go/src/github.com/openshift/cert-manager-operator:z -w /go/src/github.com/openshift/cert-manager-operator $(CONTAINER_IMAGE_NAME) make update
-	 
+
 verify-scripts:
 	hack/verify-deepcopy.sh
 	hack/verify-clientgen.sh
@@ -199,7 +199,7 @@ image-push: ## Push container image with the operator.
 
 deploy: manifests ## Deploy controller to the K8s cluster specified in ~/.kube/config.
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
-	$(KUSTOMIZE) build config/default | kubectl apply -f - 
+	$(KUSTOMIZE) build config/default | kubectl apply -f -
 
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config.
 	$(KUSTOMIZE) build config/default | kubectl delete -f -
@@ -272,10 +272,10 @@ test-e2e-debug-cluster:
 	- oc logs deployment/cert-manager-operator -n cert-manager-operator
 	@echo "---- /Debugging the current state ----"
 .PHONY: test-e2e-debug-cluster
- 
+
 .PHONY: lint
-lint: 
-	$(GOLANGCI_LINT) run --config .golangci.yaml	
+lint:
+	$(GOLANGCI_LINT) run --config .golangci.yaml
 
 $(GOLANGCI_LINT_BIN):
 	mkdir -p $(BIN_DIR)

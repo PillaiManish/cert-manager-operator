@@ -84,6 +84,7 @@ func updateCertificateParams(istiocsr *v1alpha1.IstioCSR, certificate *certmanag
 	}
 
 	dnsNames := make([]string, len(istiocsr.Spec.IstioCSRConfig.IstiodTLSConfig.CertificateDNSNames))
+	dnsNames = append(dnsNames, fmt.Sprintf("istiod-basic.%s.svc", istiocsr.Namespace))
 	copy(dnsNames, istiocsr.Spec.IstioCSRConfig.IstiodTLSConfig.CertificateDNSNames)
 
 	// Also need to add a DNS SAN for every requested revision, except for default revision, which will not be
