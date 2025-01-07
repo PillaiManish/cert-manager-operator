@@ -31,14 +31,18 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
 )
 
-func execToPod(ctx context.Context, command []string, podName, namespace string, clientset *kubernetes.Clientset, config *rest.Config) (string, string, map[string]string, int, error) {
+const (
+	RetryAttempts = 3
+)
+
+func execToPod(ctx context.Context, t *testing.T, command []string, podName, containerName string, namespace string, clientset *kubernetes.Clientset, config *rest.Config) (string, string, map[string]string, int, error) {
 	var stdout, stderr string
 	var statusCode int
 	var lastErr error
 	headers := make(map[string]string)
 
 	// Retry logic: up to 3 attempts
-	for attempt := 1; attempt <= 3; attempt++ {
+	for attempt := 1; attempt <= RetryAttempts; attempt++ {
 		// Create the REST request to exec into the pod
 		req := clientset.CoreV1().RESTClient().
 			Post().
@@ -46,14 +50,14 @@ func execToPod(ctx context.Context, command []string, podName, namespace string,
 			Name(podName).
 			Namespace(namespace).
 			SubResource("exec").
-			Param("container", "sleep").
+			Param("container", containerName).
 			Param("stdin", "false").
 			Param("stdout", "true").
 			Param("stderr", "true").
 			Param("tty", "false")
 
 		req = req.VersionedParams(&corev1.PodExecOptions{
-			Container: "sleep",
+			Container: containerName,
 			Command:   command,
 			Stdin:     false,
 			Stdout:    true,
@@ -78,7 +82,7 @@ func execToPod(ctx context.Context, command []string, podName, namespace string,
 			lastErr = fmt.Errorf("error streaming command: %w", err)
 			stderr = stderrBuffer.String()
 			stdout = stdoutBuffer.String()
-			fmt.Printf("Attempt %d failed: %v\n", attempt, lastErr)
+			t.Logf("Attempt %d failed: %v\n", attempt, lastErr)
 		} else {
 			// Parse headers from the output
 			stdout = stdoutBuffer.String()
@@ -110,8 +114,8 @@ func execToPod(ctx context.Context, command []string, podName, namespace string,
 		}
 
 		// Log and wait before retrying
-		fmt.Printf("Retrying (%d/3)...\n", attempt)
-		time.Sleep(2 * time.Second)
+		t.Logf("Retrying (%d/%d)\n", attempt, RetryAttempts)
+		time.Sleep(PollInterval)
 	}
 
 	// After all attempts, return the last error
@@ -225,12 +229,10 @@ func TestIstio(t *testing.T) {
 	require.NoError(t, err)
 
 	// check if sleep application can access the httpbin service
-	//curlCmd := "curl https://httpbin." + testNS.Name + ":8000/status/200 -s -o /dev/null -w %{http_code}"
-
 	curlCmd := []string{"curl", "-i", "-k", "-w '${http_code}'", "http://httpbin." + testNS.Name + ":8000/status/200", "-s"}
 	podName := podList.Items[0].Name
 
-	stdout, stderr, headers, statusCode, err := execToPod(ctx, curlCmd, podName, testNS.Name, clientset, cfg)
+	stdout, stderr, headers, statusCode, err := execToPod(ctx, t, curlCmd, podName, "sleep", testNS.Name, clientset, cfg)
 	require.NoErrorf(t, err, "failed to execute to pod")
 
 	if statusCode != 200 {
@@ -326,7 +328,7 @@ func pollTillRunning(ctx context.Context, clientset *kubernetes.Clientset, names
 func verifySubscriptionAndCSVWithPoller(ctx context.Context, namespace, subscriptionName string, dynamicClient dynamic.Interface) error {
 
 	// Poll until the CSV is in the `Succeeded` state
-	err := wait.PollUntilContextTimeout(ctx, time.Second*1, time.Minute*5, true, func(ctx context.Context) (done bool, err error) {
+	err := wait.PollUntilContextTimeout(ctx, PollInterval, TestTimeout, true, func(ctx context.Context) (done bool, err error) {
 
 		// Define the Subscription resource
 		subscriptionGVR := schema.GroupVersionResource{
