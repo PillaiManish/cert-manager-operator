@@ -2157,7 +2157,7 @@ spec:
   revisionHistoryLimit: 1
   issuerRef:
     name: istio-ca
-    kind: Issuer
+    kind: issuer
     group: cert-manager.io
 `)
 

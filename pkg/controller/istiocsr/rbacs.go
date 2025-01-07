@@ -134,10 +134,6 @@ func (r *Reconciler) createOrApplyClusterRoleBindings(istiocsr *v1alpha1.IstioCS
 			}
 			clusterRoleBindingsList.Items[0].DeepCopyInto(fetched)
 
-			key = types.NamespacedName{
-				Name:      fetched.GetNamespace(),
-				Namespace: fetched.GetName(),
-			}
 			roleBindingName = fmt.Sprintf("%s/%s", fetched.GetNamespace(), fetched.GetName())
 			exist = true
 		}

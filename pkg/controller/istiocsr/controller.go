@@ -44,7 +44,7 @@ var (
 
 // Reconciler reconciles a IstioCSR object
 type Reconciler struct {
-	Client
+	ctrlClient
 
 	ctx           context.Context
 	eventRecorder record.EventRecorder
@@ -52,7 +52,7 @@ type Reconciler struct {
 	scheme        *runtime.Scheme
 }
 
-// +kubebuilder:rbac:groups=operator.openshift.io,resources=istiocsrs,verbs=get;list;watch;update;patch
+// +kubebuilder:rbac:groups=operator.openshift.io,resources=istiocsrs,verbs=get;list;watch
 // +kubebuilder:rbac:groups=operator.openshift.io,resources=istiocsrs/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=operator.openshift.io,resources=istiocsrs/finalizers,verbs=update
 // +kubebuilder:rbac:groups=cert-manager.io,resources=certificates,verbs=get;list;watch;create;update
@@ -73,7 +73,7 @@ func New(mgr ctrl.Manager) (*Reconciler, error) {
 		return nil, err
 	}
 	return &Reconciler{
-		Client:        c,
+		ctrlClient:    c,
 		ctx:           context.Background(),
 		eventRecorder: mgr.GetEventRecorderFor(ControllerName),
 		log:           ctrl.Log.WithName(ControllerName),
@@ -337,5 +337,5 @@ func (r *Reconciler) cleanUp(istiocsr *v1alpha1.IstioCSR) (bool, error) {
 	// This might require a validation webhook to check for usage of service as GRPC endpoint in
 	// any of OpenShift Service Mesh or Istiod deployments to avoid disruptions across cluster.
 	r.eventRecorder.Event(istiocsr, corev1.EventTypeWarning, "RemoveDeployment", "%s istiocsr marked for deletion, remove reference in istiod deployment and remove all resources created for istiocsr deployment")
-	return true, nil
+	return false, nil
 }

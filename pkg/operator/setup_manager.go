@@ -58,7 +58,7 @@ func New() (*Manager, error) {
 		Scheme:                 scheme,
 		HealthProbeBindAddress: ":8081",
 		LeaderElection:         false,
-		LeaderElectionID:       "10c233b5.operator.openshift.io",
+		LeaderElectionID:       "10c233b5.certmanagers.operator.openshift.io",
 		NewClient: func(config *rest.Config, options client.Options) (client.Client, error) {
 			return client.New(config, options)
 		},

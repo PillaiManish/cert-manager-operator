@@ -309,35 +309,35 @@ func serviceSpecModified(desired, fetched *corev1.Service) bool {
 }
 
 func rbacRoleRulesModified[Object *rbacv1.Role | *rbacv1.ClusterRole](desired, fetched Object) bool {
-	switch any(desired).(type) {
+	switch typ := any(desired).(type) {
 	case *rbacv1.ClusterRole:
 		return !reflect.DeepEqual(any(desired).(*rbacv1.ClusterRole).Rules, any(fetched).(*rbacv1.ClusterRole).Rules)
 	case *rbacv1.Role:
 		return !reflect.DeepEqual(any(desired).(*rbacv1.Role).Rules, any(fetched).(*rbacv1.Role).Rules)
 	default:
-		return true
+		panic(fmt.Sprintf("unsupported object type %v", typ))
 	}
 }
 
 func rbacRoleBindingRefModified[Object *rbacv1.RoleBinding | *rbacv1.ClusterRoleBinding](desired, fetched Object) bool {
-	switch any(desired).(type) {
+	switch typ := any(desired).(type) {
 	case *rbacv1.ClusterRoleBinding:
 		return !reflect.DeepEqual(any(desired).(*rbacv1.ClusterRoleBinding).RoleRef, any(fetched).(*rbacv1.ClusterRoleBinding).RoleRef)
 	case *rbacv1.RoleBinding:
 		return !reflect.DeepEqual(any(desired).(*rbacv1.RoleBinding).RoleRef, any(fetched).(*rbacv1.RoleBinding).RoleRef)
 	default:
-		return true
+		panic(fmt.Sprintf("unsupported object type %v", typ))
 	}
 }
 
 func rbacRoleBindingSubjectsModified[Object *rbacv1.RoleBinding | *rbacv1.ClusterRoleBinding](desired, fetched Object) bool {
-	switch any(desired).(type) {
+	switch typ := any(desired).(type) {
 	case *rbacv1.ClusterRoleBinding:
 		return !reflect.DeepEqual(any(desired).(*rbacv1.ClusterRoleBinding).Subjects, any(fetched).(*rbacv1.ClusterRoleBinding).Subjects)
 	case *rbacv1.RoleBinding:
 		return !reflect.DeepEqual(any(desired).(*rbacv1.RoleBinding).Subjects, any(fetched).(*rbacv1.RoleBinding).Subjects)
 	default:
-		return true
+		panic(fmt.Sprintf("unsupported object type %v", typ))
 	}
 }
 

@@ -213,7 +213,7 @@ func (r *Reconciler) assertIssuerRefExists(istiocsr *v1alpha1.IstioCSR) error {
 		issuerConfig = obj.(*certmanagerv1.Issuer).Spec.IssuerConfig
 	}
 	if issuerConfig.ACME != nil {
-		return NewIrrecoverableError(invalidIssuerRefConfigError, "spec.istioCSRConfig.certManager.issuerRef uses unsupported ACME issuer: %v", issuerConfig)
+		return NewIrrecoverableError(invalidIssuerRefConfigError, "spec.istioCSRConfig.certManager.issuerRef uses unsupported ACME issuer")
 	}
 
 	return nil
