@@ -315,6 +315,18 @@ spec:
       clusterPermissions:
       - rules:
         - apiGroups:
+            - networking.k8s.io
+          resources:
+            - networkpolicies
+          verbs:
+            - watch
+            - list
+            - get
+            - create
+            - delete
+            - patch
+            - update
+        - apiGroups:
           - ""
           resources:
           - configmaps
