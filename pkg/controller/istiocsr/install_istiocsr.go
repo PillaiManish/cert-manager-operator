@@ -2,6 +2,7 @@ package istiocsr
 
 import (
 	"fmt"
+
 	"github.com/openshift/cert-manager-operator/api/operator/v1alpha1"
 )
 
@@ -44,6 +45,11 @@ func (r *Reconciler) reconcileIstioCSRDeployment(istiocsr *v1alpha1.IstioCSR, is
 
 	if err := r.createOrApplyDeployments(istiocsr, resourceLabels, istioCSRCreateRecon); err != nil {
 		r.log.Error(err, "failed to reconcile deployment resource")
+		return err
+	}
+
+	if err := r.createOrApplyNetworkPolicies(istiocsr, resourceLabels, istioCSRCreateRecon); err != nil {
+		r.log.Error(err, "failed to reconcile network policy resources")
 		return err
 	}
 

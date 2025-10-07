@@ -34,6 +34,10 @@
 // bindata/cert-manager-deployment/controller/cert-manager-svc.yaml
 // bindata/cert-manager-deployment/controller/cert-manager-tokenrequest-role.yaml
 // bindata/cert-manager-deployment/controller/cert-manager-view-cr.yaml
+// bindata/cert-manager-deployment/networkpolicies/cert-manager-api-server-egress-networkpolicy.yaml
+// bindata/cert-manager-deployment/networkpolicies/cert-manager-deny-all-networkpolicy.yaml
+// bindata/cert-manager-deployment/networkpolicies/cert-manager-metrics-ingress-networkpolicy.yaml
+// bindata/cert-manager-deployment/networkpolicies/cert-manager-webhook-ingress-networkpolicy.yaml
 // bindata/cert-manager-deployment/webhook/cert-manager-webhook-deployment.yaml
 // bindata/cert-manager-deployment/webhook/cert-manager-webhook-dynamic-serving-rb.yaml
 // bindata/cert-manager-deployment/webhook/cert-manager-webhook-dynamic-serving-role.yaml
@@ -52,6 +56,10 @@
 // bindata/istio-csr/cert-manager-istio-csr-rolebinding.yaml
 // bindata/istio-csr/cert-manager-istio-csr-service.yaml
 // bindata/istio-csr/cert-manager-istio-csr-serviceaccount.yaml
+// bindata/istio-csr/istio-csr-api-server-egress-networkpolicy.yaml
+// bindata/istio-csr/istio-csr-deny-all-networkpolicy.yaml
+// bindata/istio-csr/istio-csr-grpc-ingress-networkpolicy.yaml
+// bindata/istio-csr/istio-csr-metrics-ingress-networkpolicy.yaml
 // bindata/istio-csr/istiod-certificate.yaml
 package assets
 
@@ -1816,6 +1824,143 @@ func certManagerDeploymentControllerCertManagerViewCrYaml() (*asset, error) {
 	return a, nil
 }
 
+var _certManagerDeploymentNetworkpoliciesCertManagerApiServerEgressNetworkpolicyYaml = []byte(`apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cert-manager-api-server-egress
+  namespace: cert-manager
+  labels:
+    cert-manager.operator.openshift.io/owned-by: cert-manager
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: cert-manager
+  policyTypes:
+  - Egress
+  egress:
+  - ports:
+    - protocol: TCP
+      port: 6443
+`)
+
+func certManagerDeploymentNetworkpoliciesCertManagerApiServerEgressNetworkpolicyYamlBytes() ([]byte, error) {
+	return _certManagerDeploymentNetworkpoliciesCertManagerApiServerEgressNetworkpolicyYaml, nil
+}
+
+func certManagerDeploymentNetworkpoliciesCertManagerApiServerEgressNetworkpolicyYaml() (*asset, error) {
+	bytes, err := certManagerDeploymentNetworkpoliciesCertManagerApiServerEgressNetworkpolicyYamlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "cert-manager-deployment/networkpolicies/cert-manager-api-server-egress-networkpolicy.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _certManagerDeploymentNetworkpoliciesCertManagerDenyAllNetworkpolicyYaml = []byte(`apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cert-manager-deny-all
+  namespace: cert-manager
+  labels:
+    cert-manager.operator.openshift.io/owned-by: cert-manager
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: cert-manager
+  policyTypes:
+  - Ingress
+  - Egress
+`)
+
+func certManagerDeploymentNetworkpoliciesCertManagerDenyAllNetworkpolicyYamlBytes() ([]byte, error) {
+	return _certManagerDeploymentNetworkpoliciesCertManagerDenyAllNetworkpolicyYaml, nil
+}
+
+func certManagerDeploymentNetworkpoliciesCertManagerDenyAllNetworkpolicyYaml() (*asset, error) {
+	bytes, err := certManagerDeploymentNetworkpoliciesCertManagerDenyAllNetworkpolicyYamlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "cert-manager-deployment/networkpolicies/cert-manager-deny-all-networkpolicy.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _certManagerDeploymentNetworkpoliciesCertManagerMetricsIngressNetworkpolicyYaml = []byte(`apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cert-manager-metrics-ingress
+  namespace: cert-manager
+  labels:
+    cert-manager.operator.openshift.io/owned-by: cert-manager
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: cert-manager
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: openshift-monitoring
+    ports:
+    - protocol: TCP
+      port: 9402
+`)
+
+func certManagerDeploymentNetworkpoliciesCertManagerMetricsIngressNetworkpolicyYamlBytes() ([]byte, error) {
+	return _certManagerDeploymentNetworkpoliciesCertManagerMetricsIngressNetworkpolicyYaml, nil
+}
+
+func certManagerDeploymentNetworkpoliciesCertManagerMetricsIngressNetworkpolicyYaml() (*asset, error) {
+	bytes, err := certManagerDeploymentNetworkpoliciesCertManagerMetricsIngressNetworkpolicyYamlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "cert-manager-deployment/networkpolicies/cert-manager-metrics-ingress-networkpolicy.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _certManagerDeploymentNetworkpoliciesCertManagerWebhookIngressNetworkpolicyYaml = []byte(`apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cert-manager-webhook-ingress
+  namespace: cert-manager
+  labels:
+    cert-manager.operator.openshift.io/owned-by: cert-manager
+spec:
+  podSelector:
+    matchLabels:
+      app: webhook
+  policyTypes:
+  - Ingress
+  ingress:
+  - ports:
+    - protocol: TCP
+      port: 10250
+`)
+
+func certManagerDeploymentNetworkpoliciesCertManagerWebhookIngressNetworkpolicyYamlBytes() ([]byte, error) {
+	return _certManagerDeploymentNetworkpoliciesCertManagerWebhookIngressNetworkpolicyYaml, nil
+}
+
+func certManagerDeploymentNetworkpoliciesCertManagerWebhookIngressNetworkpolicyYaml() (*asset, error) {
+	bytes, err := certManagerDeploymentNetworkpoliciesCertManagerWebhookIngressNetworkpolicyYamlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "cert-manager-deployment/networkpolicies/cert-manager-webhook-ingress-networkpolicy.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 var _certManagerDeploymentWebhookCertManagerWebhookDeploymentYaml = []byte(`apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -2667,6 +2812,139 @@ func istioCsrCertManagerIstioCsrServiceaccountYaml() (*asset, error) {
 	return a, nil
 }
 
+var _istioCsrIstioCsrApiServerEgressNetworkpolicyYaml = []byte(`apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: istio-csr-api-server-egress
+  labels:
+    cert-manager.operator.openshift.io/owned-by: istio-csr
+spec:
+  podSelector:
+    matchLabels:
+      app: cert-manager-istio-csr
+  policyTypes:
+  - Egress
+  egress:
+  - ports:
+    - protocol: TCP
+      port: 6443
+`)
+
+func istioCsrIstioCsrApiServerEgressNetworkpolicyYamlBytes() ([]byte, error) {
+	return _istioCsrIstioCsrApiServerEgressNetworkpolicyYaml, nil
+}
+
+func istioCsrIstioCsrApiServerEgressNetworkpolicyYaml() (*asset, error) {
+	bytes, err := istioCsrIstioCsrApiServerEgressNetworkpolicyYamlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "istio-csr/istio-csr-api-server-egress-networkpolicy.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _istioCsrIstioCsrDenyAllNetworkpolicyYaml = []byte(`apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: istio-csr-deny-all
+  labels:
+    cert-manager.operator.openshift.io/owned-by: istio-csr
+spec:
+  podSelector:
+    matchLabels:
+      app: cert-manager-istio-csr
+  policyTypes:
+  - Ingress
+  - Egress
+`)
+
+func istioCsrIstioCsrDenyAllNetworkpolicyYamlBytes() ([]byte, error) {
+	return _istioCsrIstioCsrDenyAllNetworkpolicyYaml, nil
+}
+
+func istioCsrIstioCsrDenyAllNetworkpolicyYaml() (*asset, error) {
+	bytes, err := istioCsrIstioCsrDenyAllNetworkpolicyYamlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "istio-csr/istio-csr-deny-all-networkpolicy.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _istioCsrIstioCsrGrpcIngressNetworkpolicyYaml = []byte(`apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: istio-csr-grpc-ingress
+  labels:
+    cert-manager.operator.openshift.io/owned-by: istio-csr
+spec:
+  podSelector:
+    matchLabels:
+      app: cert-manager-istio-csr
+  policyTypes:
+  - Ingress
+  ingress:
+  - ports:
+    - protocol: TCP
+      port: 6443
+`)
+
+func istioCsrIstioCsrGrpcIngressNetworkpolicyYamlBytes() ([]byte, error) {
+	return _istioCsrIstioCsrGrpcIngressNetworkpolicyYaml, nil
+}
+
+func istioCsrIstioCsrGrpcIngressNetworkpolicyYaml() (*asset, error) {
+	bytes, err := istioCsrIstioCsrGrpcIngressNetworkpolicyYamlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "istio-csr/istio-csr-grpc-ingress-networkpolicy.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _istioCsrIstioCsrMetricsIngressNetworkpolicyYaml = []byte(`apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: istio-csr-metrics-ingress
+  labels:
+    cert-manager.operator.openshift.io/owned-by: istio-csr
+spec:
+  podSelector:
+    matchLabels:
+      app: cert-manager-istio-csr
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: openshift-monitoring
+    ports:
+    - protocol: TCP
+      port: 9402
+`)
+
+func istioCsrIstioCsrMetricsIngressNetworkpolicyYamlBytes() ([]byte, error) {
+	return _istioCsrIstioCsrMetricsIngressNetworkpolicyYaml, nil
+}
+
+func istioCsrIstioCsrMetricsIngressNetworkpolicyYaml() (*asset, error) {
+	bytes, err := istioCsrIstioCsrMetricsIngressNetworkpolicyYamlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "istio-csr/istio-csr-metrics-ingress-networkpolicy.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 var _istioCsrIstiodCertificateYaml = []byte(`apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -2798,6 +3076,10 @@ var _bindata = map[string]func() (*asset, error){
 	"cert-manager-deployment/controller/cert-manager-svc.yaml":                                         certManagerDeploymentControllerCertManagerSvcYaml,
 	"cert-manager-deployment/controller/cert-manager-tokenrequest-role.yaml":                           certManagerDeploymentControllerCertManagerTokenrequestRoleYaml,
 	"cert-manager-deployment/controller/cert-manager-view-cr.yaml":                                     certManagerDeploymentControllerCertManagerViewCrYaml,
+	"cert-manager-deployment/networkpolicies/cert-manager-api-server-egress-networkpolicy.yaml":        certManagerDeploymentNetworkpoliciesCertManagerApiServerEgressNetworkpolicyYaml,
+	"cert-manager-deployment/networkpolicies/cert-manager-deny-all-networkpolicy.yaml":                 certManagerDeploymentNetworkpoliciesCertManagerDenyAllNetworkpolicyYaml,
+	"cert-manager-deployment/networkpolicies/cert-manager-metrics-ingress-networkpolicy.yaml":          certManagerDeploymentNetworkpoliciesCertManagerMetricsIngressNetworkpolicyYaml,
+	"cert-manager-deployment/networkpolicies/cert-manager-webhook-ingress-networkpolicy.yaml":          certManagerDeploymentNetworkpoliciesCertManagerWebhookIngressNetworkpolicyYaml,
 	"cert-manager-deployment/webhook/cert-manager-webhook-deployment.yaml":                             certManagerDeploymentWebhookCertManagerWebhookDeploymentYaml,
 	"cert-manager-deployment/webhook/cert-manager-webhook-dynamic-serving-rb.yaml":                     certManagerDeploymentWebhookCertManagerWebhookDynamicServingRbYaml,
 	"cert-manager-deployment/webhook/cert-manager-webhook-dynamic-serving-role.yaml":                   certManagerDeploymentWebhookCertManagerWebhookDynamicServingRoleYaml,
@@ -2816,6 +3098,10 @@ var _bindata = map[string]func() (*asset, error){
 	"istio-csr/cert-manager-istio-csr-rolebinding.yaml":                                                istioCsrCertManagerIstioCsrRolebindingYaml,
 	"istio-csr/cert-manager-istio-csr-service.yaml":                                                    istioCsrCertManagerIstioCsrServiceYaml,
 	"istio-csr/cert-manager-istio-csr-serviceaccount.yaml":                                             istioCsrCertManagerIstioCsrServiceaccountYaml,
+	"istio-csr/istio-csr-api-server-egress-networkpolicy.yaml":                                         istioCsrIstioCsrApiServerEgressNetworkpolicyYaml,
+	"istio-csr/istio-csr-deny-all-networkpolicy.yaml":                                                  istioCsrIstioCsrDenyAllNetworkpolicyYaml,
+	"istio-csr/istio-csr-grpc-ingress-networkpolicy.yaml":                                              istioCsrIstioCsrGrpcIngressNetworkpolicyYaml,
+	"istio-csr/istio-csr-metrics-ingress-networkpolicy.yaml":                                           istioCsrIstioCsrMetricsIngressNetworkpolicyYaml,
 	"istio-csr/istiod-certificate.yaml":                                                                istioCsrIstiodCertificateYaml,
 }
 
@@ -2903,6 +3189,12 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"cert-manager-tokenrequest-role.yaml":             {certManagerDeploymentControllerCertManagerTokenrequestRoleYaml, map[string]*bintree{}},
 			"cert-manager-view-cr.yaml":                       {certManagerDeploymentControllerCertManagerViewCrYaml, map[string]*bintree{}},
 		}},
+		"networkpolicies": {nil, map[string]*bintree{
+			"cert-manager-api-server-egress-networkpolicy.yaml": {certManagerDeploymentNetworkpoliciesCertManagerApiServerEgressNetworkpolicyYaml, map[string]*bintree{}},
+			"cert-manager-deny-all-networkpolicy.yaml":          {certManagerDeploymentNetworkpoliciesCertManagerDenyAllNetworkpolicyYaml, map[string]*bintree{}},
+			"cert-manager-metrics-ingress-networkpolicy.yaml":   {certManagerDeploymentNetworkpoliciesCertManagerMetricsIngressNetworkpolicyYaml, map[string]*bintree{}},
+			"cert-manager-webhook-ingress-networkpolicy.yaml":   {certManagerDeploymentNetworkpoliciesCertManagerWebhookIngressNetworkpolicyYaml, map[string]*bintree{}},
+		}},
 		"webhook": {nil, map[string]*bintree{
 			"cert-manager-webhook-deployment.yaml":                     {certManagerDeploymentWebhookCertManagerWebhookDeploymentYaml, map[string]*bintree{}},
 			"cert-manager-webhook-dynamic-serving-rb.yaml":             {certManagerDeploymentWebhookCertManagerWebhookDynamicServingRbYaml, map[string]*bintree{}},
@@ -2925,6 +3217,10 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"cert-manager-istio-csr-rolebinding.yaml":        {istioCsrCertManagerIstioCsrRolebindingYaml, map[string]*bintree{}},
 		"cert-manager-istio-csr-service.yaml":            {istioCsrCertManagerIstioCsrServiceYaml, map[string]*bintree{}},
 		"cert-manager-istio-csr-serviceaccount.yaml":     {istioCsrCertManagerIstioCsrServiceaccountYaml, map[string]*bintree{}},
+		"istio-csr-api-server-egress-networkpolicy.yaml": {istioCsrIstioCsrApiServerEgressNetworkpolicyYaml, map[string]*bintree{}},
+		"istio-csr-deny-all-networkpolicy.yaml":          {istioCsrIstioCsrDenyAllNetworkpolicyYaml, map[string]*bintree{}},
+		"istio-csr-grpc-ingress-networkpolicy.yaml":      {istioCsrIstioCsrGrpcIngressNetworkpolicyYaml, map[string]*bintree{}},
+		"istio-csr-metrics-ingress-networkpolicy.yaml":   {istioCsrIstioCsrMetricsIngressNetworkpolicyYaml, map[string]*bintree{}},
 		"istiod-certificate.yaml":                        {istioCsrIstiodCertificateYaml, map[string]*bintree{}},
 	}},
 }}
