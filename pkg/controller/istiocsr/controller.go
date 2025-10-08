@@ -8,6 +8,7 @@ import (
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	networkingv1 "k8s.io/api/networking/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -105,6 +106,9 @@ func BuildCustomClient(mgr ctrl.Manager) (client.Client, error) {
 			&corev1.ServiceAccount{}: {
 				Label: managedResourceLabelReqSelector,
 			},
+			&networkingv1.NetworkPolicy{}: {
+				Label: managedResourceLabelReqSelector,
+			},
 		},
 		ReaderFailOnMissingInformer: true,
 	}
@@ -149,6 +153,9 @@ func BuildCustomClient(mgr ctrl.Manager) (client.Client, error) {
 		return nil, err
 	}
 	if _, err = customCache.GetInformer(context.Background(), &certmanagerv1.ClusterIssuer{}); err != nil {
+		return nil, err
+	}
+	if _, err = customCache.GetInformer(context.Background(), &networkingv1.NetworkPolicy{}); err != nil {
 		return nil, err
 	}
 
