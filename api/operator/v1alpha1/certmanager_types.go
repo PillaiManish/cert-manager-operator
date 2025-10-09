@@ -73,6 +73,7 @@ type CertManagerSpec struct {
 	//
 	// +kubebuilder:validation:Optional
 	// +kubebuilder:validation:Enum:="true";"false";""
+	// +kubebuilder:validation:XValidation:rule="oldSelf != 'true' || self == 'true'",message="defaultNetworkPolicy cannot be changed from 'true' to 'false' once set"
 	// +optional
 	DefaultNetworkPolicy string `json:"defaultNetworkPolicy,omitempty"`
 
@@ -94,6 +95,7 @@ type CertManagerSpec struct {
 	// This field is immutable once DefaultNetworkPolicy is set to "true" for security reasons.
 	//
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:XValidation:rule="size(oldSelf) == 0 || size(self) >= size(oldSelf)",message="networkPolicies can only be extended, not reduced, once defaultNetworkPolicy is enabled"
 	// +optional
 	NetworkPolicies []NetworkPolicy `json:"networkPolicies,omitempty"`
 }

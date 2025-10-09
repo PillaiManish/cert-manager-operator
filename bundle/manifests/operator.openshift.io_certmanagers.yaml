@@ -528,13 +528,14 @@ spec:
                   cannot be disabled once enabled to prevent accidental security degradation.
                   Users should carefully plan their network policy requirements before enabling this field.
                 enum:
-                - true
-                - false
+                - "true"
+                - "false"
+                - ""
                 type: string
                 x-kubernetes-validations:
                 - message: defaultNetworkPolicy cannot be changed from 'true' to 'false'
                     once set
-                  rule: '!has(oldSelf) || oldSelf != ''true'' || self == ''true'''
+                  rule: oldSelf != 'true' || self == 'true'
               logLevel:
                 default: Normal
                 description: |-
@@ -799,7 +800,7 @@ spec:
                 x-kubernetes-validations:
                 - message: networkPolicies can only be extended, not reduced, once
                     defaultNetworkPolicy is enabled
-                  rule: '!has(oldSelf) || size(oldSelf) == 0 || size(self) >= size(oldSelf)'
+                  rule: size(oldSelf) == 0 || size(self) >= size(oldSelf)
               observedConfig:
                 description: |-
                   observedConfig holds a sparse config that controller has observed from the cluster state.  It exists in spec because
