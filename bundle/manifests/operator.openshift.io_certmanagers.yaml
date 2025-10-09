@@ -798,10 +798,8 @@ spec:
                   type: object
                 type: array
                 x-kubernetes-validations:
-                - message: networkPolicies can only be extended, existing items cannot
-                    be modified or removed
-                  rule: size(oldSelf) == 0 || (size(self) >= size(oldSelf) && oldSelf.all(i,
-                    i < size(self) && self[i] == oldSelf[i]))
+                - message: networkPolicies can only be extended, not reduced
+                  rule: size(oldSelf) == 0 || size(self) >= size(oldSelf)
               observedConfig:
                 description: |-
                   observedConfig holds a sparse config that controller has observed from the cluster state.  It exists in spec because

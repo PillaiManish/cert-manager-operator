@@ -95,7 +95,7 @@ type CertManagerSpec struct {
 	// This field is immutable once DefaultNetworkPolicy is set to "true" for security reasons.
 	//
 	// +kubebuilder:validation:Optional
-	// +kubebuilder:validation:XValidation:rule="size(oldSelf) == 0 || (size(self) >= size(oldSelf) && oldSelf.all(i, i < size(self) && self[i] == oldSelf[i]))",message="networkPolicies can only be extended, existing items cannot be modified or removed"
+	// +kubebuilder:validation:XValidation:rule="size(oldSelf) == 0 || size(self) >= size(oldSelf)",message="networkPolicies can only be extended, not reduced"
 	// +optional
 	NetworkPolicies []NetworkPolicy `json:"networkPolicies,omitempty"`
 }
