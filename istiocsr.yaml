@@ -1,0 +1,70 @@
+apiVersion: operator.openshift.io/v1alpha1
+kind: IstioCSR
+metadata:
+  name: default
+  namespace: istio-system
+spec:
+  istioCSRConfig:
+    # Log level for istio-csr agent (1-5, default: 1)
+    logLevel: 2
+    
+    # Log format: text or json (default: text)
+    logFormat: text
+    
+    # Cert-manager configuration
+    certManager:
+      issuerRef:
+        name: istio-ca
+        kind: Issuer
+        group: cert-manager.io
+    
+    # Istiod TLS configuration
+    istiodTLSConfig:
+      # Trust domain for the istio cluster
+      trustDomain: cluster.local
+      
+      # Certificate duration (default: 1h)
+      certificateDuration: "1h"
+      
+      # Renew before expiry (default: 30m)
+      certificateRenewBefore: "30m"
+      
+      # Private key size (default: 2048)
+      privateKeySize: 2048
+      
+      # Signature algorithm: RSA or ECDSA (default: RSA)
+      signatureAlgorithm: "RSA"
+      
+      # Maximum certificate duration that can be requested
+      maxCertificateDuration: "1h"
+    
+    # Server configuration
+    server:
+      # Cluster ID to verify incoming CSRs (default: Kubernetes)
+      clusterID: "Kubernetes"
+      
+      # Port to serve gRPC service (default: 443)
+      port: 443
+    
+    # Istio configuration
+    istio:
+      # Namespace where istio control-plane is installed
+      namespace: istio-system
+      
+      # Istio revisions (default: ["default"])
+      revisions:
+        - "default"
+    
+    # Resource requirements (optional)
+    resources:
+      requests:
+        cpu: "10m"
+        memory: "32Mi"
+      limits:
+        cpu: "100m"
+        memory: "128Mi"
+  
+  # Controller configuration (optional)
+  controllerConfig:
+    labels:
+      app.kubernetes.io/managed-by: cert-manager-operator
