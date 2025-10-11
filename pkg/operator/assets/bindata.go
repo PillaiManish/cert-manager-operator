@@ -1834,7 +1834,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: cert-manager
+      app.kubernetes.io/instance: cert-manager
   policyTypes:
   - Egress
   egress:
@@ -1868,7 +1868,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: cert-manager
+      app.kubernetes.io/instance: cert-manager
   policyTypes:
   - Ingress
   - Egress
@@ -1899,7 +1899,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: cert-manager
+      app.kubernetes.io/instance: cert-manager
   policyTypes:
   - Ingress
   ingress:

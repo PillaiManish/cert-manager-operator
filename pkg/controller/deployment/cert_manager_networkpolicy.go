@@ -147,9 +147,7 @@ func (c *CertManagerNetworkPolicyUserDefinedController) validateNetworkPolicyCon
 		if policy.Name == "" {
 			return fmt.Errorf("network policy at index %d: name cannot be empty", i)
 		}
-		if len(policy.Egress) == 0 {
-			return fmt.Errorf("network policy at index %d: egress rules cannot be empty when network policies are enabled", i)
-		}
+		// Note: Empty egress rules are allowed and create a deny-all egress policy
 		if err := c.validateComponentName(policy.ComponentName); err != nil {
 			return fmt.Errorf("network policy at index %d: invalid component name: %w", i, err)
 		}

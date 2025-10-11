@@ -232,9 +232,6 @@ const (
 
 	// Webhook represents the cert-manager webhook component
 	Webhook ComponentName = "Webhook"
-
-	// IstioCSRComponent represents the cert-manager Istio CSR component
-	IstioCSRComponent ComponentName = "IstioCSR"
 )
 
 // NetworkPolicy represents a custom network policy configuration for operator-managed components.
@@ -247,7 +244,7 @@ type NetworkPolicy struct {
 	Name string `json:"name"`
 
 	// ComponentName represents the different cert-manager components that can have network policies applied.
-	// +kubebuilder:validation:Enum=CAInjector;CoreController;Webhook;IstioCSR
+	// +kubebuilder:validation:Enum=CAInjector;CoreController;Webhook
 	// +kubebuilder:validation:Required
 	// +required
 	ComponentName ComponentName `json:"componentName"`

@@ -5,10 +5,8 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/apimachinery/pkg/util/intstr"
 
 	"github.com/openshift/cert-manager-operator/api/operator/v1alpha1"
 	"github.com/openshift/cert-manager-operator/pkg/operator/assets"
@@ -30,7 +28,10 @@ func (r *Reconciler) createOrApplyNetworkPolicies(istiocsr *v1alpha1.IstioCSR, r
 	}
 
 	for _, assetPath := range istioCSRNetworkPolicyAssets {
-		obj := r.getNetworkPolicyFromAsset(assetPath, istiocsr, resourceLabels)
+		obj, err := r.getNetworkPolicyFromAsset(assetPath, istiocsr, resourceLabels)
+		if err != nil {
+			return fmt.Errorf("failed to get network policy from asset %s: %w", assetPath, err)
+		}
 		if err := r.createOrUpdateNetworkPolicy(obj, istioCSRCreateRecon); err != nil {
 			return fmt.Errorf("failed to create/update network policy from %s: %w", assetPath, err)
 		}
@@ -39,7 +40,7 @@ func (r *Reconciler) createOrApplyNetworkPolicies(istiocsr *v1alpha1.IstioCSR, r
 	return nil
 }
 
-func (r *Reconciler) getNetworkPolicyFromAsset(assetPath string, istiocsr *v1alpha1.IstioCSR, resourceLabels map[string]string) *networkingv1.NetworkPolicy {
+func (r *Reconciler) getNetworkPolicyFromAsset(assetPath string, istiocsr *v1alpha1.IstioCSR, resourceLabels map[string]string) (*networkingv1.NetworkPolicy, error) {
 	// Get the target namespace for istio-csr deployment
 	namespace := istiocsr.GetNamespace()
 	if namespace == "" {
@@ -50,7 +51,7 @@ func (r *Reconciler) getNetworkPolicyFromAsset(assetPath string, istiocsr *v1alp
 	assetBytes := assets.MustAsset(assetPath)
 	obj, err := runtime.Decode(codecs.UniversalDeserializer(), assetBytes)
 	if err != nil {
-		panic(fmt.Sprintf("failed to decode network policy asset %s: %v", assetPath, err))
+		return nil, fmt.Errorf("failed to decode network policy asset %s: %w", assetPath, err)
 	}
 
 	policy := obj.(*networkingv1.NetworkPolicy)
@@ -66,157 +67,7 @@ func (r *Reconciler) getNetworkPolicyFromAsset(assetPath string, istiocsr *v1alp
 		policy.Labels[k] = v
 	}
 
-	return policy
-}
-
-func (r *Reconciler) createIstioCSRDenyAllPolicy(namespace string, istiocsr *v1alpha1.IstioCSR, resourceLabels map[string]string) *networkingv1.NetworkPolicy {
-	labels := make(map[string]string)
-	for k, v := range resourceLabels {
-		labels[k] = v
-	}
-	labels[networkPolicyOwnerLabel] = "istio-csr"
-
-	return &networkingv1.NetworkPolicy{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "istio-csr-deny-all",
-			Namespace: namespace,
-			Labels:    labels,
-		},
-		Spec: networkingv1.NetworkPolicySpec{
-			PodSelector: metav1.LabelSelector{
-				MatchLabels: map[string]string{
-					"app": "cert-manager-istio-csr",
-				},
-			},
-			PolicyTypes: []networkingv1.PolicyType{
-				networkingv1.PolicyTypeIngress,
-				networkingv1.PolicyTypeEgress,
-			},
-		},
-	}
-}
-
-func (r *Reconciler) createIstioCSRAPIServerEgressPolicy(namespace string, istiocsr *v1alpha1.IstioCSR, resourceLabels map[string]string) *networkingv1.NetworkPolicy {
-	labels := make(map[string]string)
-	for k, v := range resourceLabels {
-		labels[k] = v
-	}
-	labels[networkPolicyOwnerLabel] = "istio-csr"
-
-	return &networkingv1.NetworkPolicy{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "istio-csr-api-server-egress",
-			Namespace: namespace,
-			Labels:    labels,
-		},
-		Spec: networkingv1.NetworkPolicySpec{
-			PodSelector: metav1.LabelSelector{
-				MatchLabels: map[string]string{
-					"app": "cert-manager-istio-csr",
-				},
-			},
-			PolicyTypes: []networkingv1.PolicyType{
-				networkingv1.PolicyTypeEgress,
-			},
-			Egress: []networkingv1.NetworkPolicyEgressRule{
-				{
-					Ports: []networkingv1.NetworkPolicyPort{
-						{
-							Protocol: &[]corev1.Protocol{corev1.ProtocolTCP}[0],
-							Port:     &intstr.IntOrString{Type: intstr.Int, IntVal: 6443},
-						},
-					},
-				},
-			},
-		},
-	}
-}
-
-func (r *Reconciler) createIstioCSRMetricsIngressPolicy(namespace string, istiocsr *v1alpha1.IstioCSR, resourceLabels map[string]string) *networkingv1.NetworkPolicy {
-	labels := make(map[string]string)
-	for k, v := range resourceLabels {
-		labels[k] = v
-	}
-	labels[networkPolicyOwnerLabel] = "istio-csr"
-
-	return &networkingv1.NetworkPolicy{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "istio-csr-metrics-ingress",
-			Namespace: namespace,
-			Labels:    labels,
-		},
-		Spec: networkingv1.NetworkPolicySpec{
-			PodSelector: metav1.LabelSelector{
-				MatchLabels: map[string]string{
-					"app": "cert-manager-istio-csr",
-				},
-			},
-			PolicyTypes: []networkingv1.PolicyType{
-				networkingv1.PolicyTypeIngress,
-			},
-			Ingress: []networkingv1.NetworkPolicyIngressRule{
-				{
-					From: []networkingv1.NetworkPolicyPeer{
-						{
-							NamespaceSelector: &metav1.LabelSelector{
-								MatchLabels: map[string]string{
-									"name": "openshift-monitoring",
-								},
-							},
-						},
-					},
-					Ports: []networkingv1.NetworkPolicyPort{
-						{
-							Protocol: &[]corev1.Protocol{corev1.ProtocolTCP}[0],
-							Port:     &intstr.IntOrString{Type: intstr.Int, IntVal: 9402},
-						},
-					},
-				},
-			},
-		},
-	}
-}
-
-func (r *Reconciler) createIstioCSRGRPCIngressPolicy(namespace string, istiocsr *v1alpha1.IstioCSR, resourceLabels map[string]string) *networkingv1.NetworkPolicy {
-	labels := make(map[string]string)
-	for k, v := range resourceLabels {
-		labels[k] = v
-	}
-	labels[networkPolicyOwnerLabel] = "istio-csr"
-
-	// Get the gRPC service port from the server config, default to 6443
-	grpcPort := int32(6443)
-	if istiocsr.Spec.IstioCSRConfig.Server != nil && istiocsr.Spec.IstioCSRConfig.Server.Port != 0 {
-		grpcPort = istiocsr.Spec.IstioCSRConfig.Server.Port
-	}
-
-	return &networkingv1.NetworkPolicy{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "istio-csr-grpc-ingress",
-			Namespace: namespace,
-			Labels:    labels,
-		},
-		Spec: networkingv1.NetworkPolicySpec{
-			PodSelector: metav1.LabelSelector{
-				MatchLabels: map[string]string{
-					"app": "cert-manager-istio-csr",
-				},
-			},
-			PolicyTypes: []networkingv1.PolicyType{
-				networkingv1.PolicyTypeIngress,
-			},
-			Ingress: []networkingv1.NetworkPolicyIngressRule{
-				{
-					Ports: []networkingv1.NetworkPolicyPort{
-						{
-							Protocol: &[]corev1.Protocol{corev1.ProtocolTCP}[0],
-							Port:     &intstr.IntOrString{Type: intstr.Int, IntVal: grpcPort},
-						},
-					},
-				},
-			},
-		},
-	}
+	return policy, nil
 }
 
 func (r *Reconciler) createOrUpdateNetworkPolicy(policy *networkingv1.NetworkPolicy, istioCSRCreateRecon bool) error {

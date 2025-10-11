@@ -586,7 +586,6 @@ spec:
                       - CAInjector
                       - CoreController
                       - Webhook
-                      - IstioCSR
                       type: string
                     egress:
                       description: |-
