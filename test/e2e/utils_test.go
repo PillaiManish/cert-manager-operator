@@ -27,6 +27,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
+	networkingv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/api/equality"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
@@ -942,5 +943,48 @@ func VerifyContainerResources(pod corev1.Pod, containerName string, expectedReso
 			}
 		}
 	}
+	return nil
+}
+
+// resetCertManagerNetworkPolicyState resets the CertManager to have defaultNetworkPolicy="true"
+func resetCertManagerNetworkPolicyState(ctx context.Context, client *certmanoperatorclient.Clientset, loader library.DynamicResourceLoader) error {
+	err := retry.RetryOnConflict(retry.DefaultRetry, func() error {
+		var operatorState *v1alpha1.CertManager
+		err := wait.PollUntilContextTimeout(context.TODO(), slowPollInterval, highTimeout, true, func(context.Context) (bool, error) {
+			operator, err := client.OperatorV1alpha1().CertManagers().Get(ctx, "cluster", metav1.GetOptions{})
+			if err != nil {
+				if apierrors.IsNotFound(err) {
+					return false, nil
+				}
+				return false, err
+			}
+
+			operatorState = operator
+			return true, nil
+		})
+		if err != nil {
+			return err
+		}
+
+		updatedOperator := operatorState.DeepCopy()
+
+		// Set defaultNetworkPolicy to "true" to enable default network policies
+		updatedOperator.Spec.DefaultNetworkPolicy = "true"
+
+		// Clear custom network policies to start with only default ones
+		updatedOperator.Spec.NetworkPolicies = []v1alpha1.NetworkPolicy{
+			{
+				Name:   "egress-apply-allow",
+				Egress: []networkingv1.NetworkPolicyEgressRule{},
+			},
+		}
+
+		_, err = client.OperatorV1alpha1().CertManagers().Update(context.TODO(), updatedOperator, metav1.UpdateOptions{})
+		return err
+	})
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
