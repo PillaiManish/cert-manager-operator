@@ -34,6 +34,7 @@ var (
 		"cert-manager-deployment/networkpolicies/cert-manager-api-server-egress-networkpolicy.yaml",
 		"cert-manager-deployment/networkpolicies/cert-manager-metrics-ingress-networkpolicy.yaml",
 		"cert-manager-deployment/networkpolicies/cert-manager-webhook-ingress-networkpolicy.yaml",
+		"cert-manager-deployment/networkpolicies/cert-manager-egress-dns-networkpolicy.yaml",
 	}
 )
 

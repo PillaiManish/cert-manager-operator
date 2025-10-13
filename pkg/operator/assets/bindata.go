@@ -36,6 +36,7 @@
 // bindata/cert-manager-deployment/controller/cert-manager-view-cr.yaml
 // bindata/cert-manager-deployment/networkpolicies/cert-manager-api-server-egress-networkpolicy.yaml
 // bindata/cert-manager-deployment/networkpolicies/cert-manager-deny-all-networkpolicy.yaml
+// bindata/cert-manager-deployment/networkpolicies/cert-manager-egress-dns-networkpolicy.yaml
 // bindata/cert-manager-deployment/networkpolicies/cert-manager-metrics-ingress-networkpolicy.yaml
 // bindata/cert-manager-deployment/networkpolicies/cert-manager-webhook-ingress-networkpolicy.yaml
 // bindata/cert-manager-deployment/webhook/cert-manager-webhook-deployment.yaml
@@ -1889,6 +1890,49 @@ func certManagerDeploymentNetworkpoliciesCertManagerDenyAllNetworkpolicyYaml() (
 	return a, nil
 }
 
+var _certManagerDeploymentNetworkpoliciesCertManagerEgressDnsNetworkpolicyYaml = []byte(`apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cert-manager-egress-dns
+  namespace: cert-manager
+  labels:
+    cert-manager.operator.openshift.io/owned-by: cert-manager
+spec:
+  podSelector:
+    matchLabels:
+      app: cert-manager
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: openshift-dns
+          podSelector:
+            matchLabels:
+              dns.operator.openshift.io/daemonset-dns: default
+      ports:
+        - protocol: TCP
+          port: 5353
+        - protocol: UDP
+          port: 5353
+  policyTypes:
+    - Egress
+`)
+
+func certManagerDeploymentNetworkpoliciesCertManagerEgressDnsNetworkpolicyYamlBytes() ([]byte, error) {
+	return _certManagerDeploymentNetworkpoliciesCertManagerEgressDnsNetworkpolicyYaml, nil
+}
+
+func certManagerDeploymentNetworkpoliciesCertManagerEgressDnsNetworkpolicyYaml() (*asset, error) {
+	bytes, err := certManagerDeploymentNetworkpoliciesCertManagerEgressDnsNetworkpolicyYamlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "cert-manager-deployment/networkpolicies/cert-manager-egress-dns-networkpolicy.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 var _certManagerDeploymentNetworkpoliciesCertManagerMetricsIngressNetworkpolicyYaml = []byte(`apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -3078,6 +3122,7 @@ var _bindata = map[string]func() (*asset, error){
 	"cert-manager-deployment/controller/cert-manager-view-cr.yaml":                                     certManagerDeploymentControllerCertManagerViewCrYaml,
 	"cert-manager-deployment/networkpolicies/cert-manager-api-server-egress-networkpolicy.yaml":        certManagerDeploymentNetworkpoliciesCertManagerApiServerEgressNetworkpolicyYaml,
 	"cert-manager-deployment/networkpolicies/cert-manager-deny-all-networkpolicy.yaml":                 certManagerDeploymentNetworkpoliciesCertManagerDenyAllNetworkpolicyYaml,
+	"cert-manager-deployment/networkpolicies/cert-manager-egress-dns-networkpolicy.yaml":               certManagerDeploymentNetworkpoliciesCertManagerEgressDnsNetworkpolicyYaml,
 	"cert-manager-deployment/networkpolicies/cert-manager-metrics-ingress-networkpolicy.yaml":          certManagerDeploymentNetworkpoliciesCertManagerMetricsIngressNetworkpolicyYaml,
 	"cert-manager-deployment/networkpolicies/cert-manager-webhook-ingress-networkpolicy.yaml":          certManagerDeploymentNetworkpoliciesCertManagerWebhookIngressNetworkpolicyYaml,
 	"cert-manager-deployment/webhook/cert-manager-webhook-deployment.yaml":                             certManagerDeploymentWebhookCertManagerWebhookDeploymentYaml,
@@ -3192,6 +3237,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"networkpolicies": {nil, map[string]*bintree{
 			"cert-manager-api-server-egress-networkpolicy.yaml": {certManagerDeploymentNetworkpoliciesCertManagerApiServerEgressNetworkpolicyYaml, map[string]*bintree{}},
 			"cert-manager-deny-all-networkpolicy.yaml":          {certManagerDeploymentNetworkpoliciesCertManagerDenyAllNetworkpolicyYaml, map[string]*bintree{}},
+			"cert-manager-egress-dns-networkpolicy.yaml":        {certManagerDeploymentNetworkpoliciesCertManagerEgressDnsNetworkpolicyYaml, map[string]*bintree{}},
 			"cert-manager-metrics-ingress-networkpolicy.yaml":   {certManagerDeploymentNetworkpoliciesCertManagerMetricsIngressNetworkpolicyYaml, map[string]*bintree{}},
 			"cert-manager-webhook-ingress-networkpolicy.yaml":   {certManagerDeploymentNetworkpoliciesCertManagerWebhookIngressNetworkpolicyYaml, map[string]*bintree{}},
 		}},
