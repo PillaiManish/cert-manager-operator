@@ -976,7 +976,9 @@ func resetCertManagerNetworkPolicyState(ctx context.Context, client *certmanoper
 			{
 				Name:          "egress-apply-allow",
 				ComponentName: "CoreController",
-				Egress:        []networkingv1.NetworkPolicyEgressRule{},
+				Egress: []networkingv1.NetworkPolicyEgressRule{
+					{},
+				},
 			},
 		}
 
