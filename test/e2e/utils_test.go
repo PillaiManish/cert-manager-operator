@@ -974,8 +974,9 @@ func resetCertManagerNetworkPolicyState(ctx context.Context, client *certmanoper
 		// Clear custom network policies to start with only default ones
 		updatedOperator.Spec.NetworkPolicies = []v1alpha1.NetworkPolicy{
 			{
-				Name:   "egress-apply-allow",
-				Egress: []networkingv1.NetworkPolicyEgressRule{},
+				Name:          "egress-apply-allow",
+				ComponentName: "CoreController",
+				Egress:        []networkingv1.NetworkPolicyEgressRule{},
 			},
 		}
 
